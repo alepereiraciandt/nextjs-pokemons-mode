@@ -4,14 +4,25 @@ import React from 'react';
 
 import styles from '../../styles/Details.module.css';
 
+export async function getStaticPaths() {
+  const resp = await fetch("https://jherr-pokemon.s3.us-west-1.amazonaws.com/index.json");
+  const pokemon = await resp.json();
 
-export async function getServerSideProps({ params: { id } }) {
+  return {
+    paths: pokemon.map((pokemon) => ({
+      params: { id: pokemon.id.toString() },
+    })),
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params: { id } }) {
 
     const resp = await fetch(`https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${id}.json`);
     
     return {
         props: {
-            pokemon: await resp.json()
+          pokemon: await resp.json()
         }
     }
 }
